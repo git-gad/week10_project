@@ -25,33 +25,51 @@ def get_connection(retries=30, delay=1):
 
     raise RuntimeError("MySQL not available")
 
-conn = get_connection()
-cursor = conn.cursor()
+class DAL:
+    @staticmethod
+    def get_all():
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM contacts')
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return rows
 
-def get_all():
-    cursor.execute('SELECT * FROM contacts')
-    rows = cursor.fetchall()
-    return rows
-
-def create_contact(contact: ContactCreate):
-    query = '''INSERT INTO contacts (first_name, last_name, phone_number) 
-            VALUES (%s, %s, %s)'''
-    data = (contact.first_name, contact.last_name, contact.phone_number)
-    cursor.execute(query, data)
-    id = cursor.lastrowid
-    conn.commit()
-    return id  
-    
-def update_contact(id: int, updated_contact: ContactCreate):
-    query = '''UPDATE contacts 
-            SET first_name = %s, last_name = %s, phone_number = %s
-            WHERE id = %s'''
-    data = (updated_contact.first_name, updated_contact.last_name, updated_contact.phone_number, id)
-    cursor.execute(query, data)
-    conn.commit()
-    
-def del_contact(id: int):
-    query = '''DELETE FROM contacts 
-            WHERE id = %s'''
-    cursor.execute(query, (id,))
-    conn.commit()
+    @staticmethod
+    def create_contact(contact: ContactCreate):
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = '''INSERT INTO contacts (first_name, last_name, phone_number) 
+                VALUES (%s, %s, %s)'''
+        data = (contact.first_name, contact.last_name, contact.phone_number)
+        cursor.execute(query, data)
+        id = cursor.lastrowid
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return id  
+     
+    @staticmethod    
+    def update_contact(id: int, updated_contact: ContactCreate):
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = '''UPDATE contacts 
+                SET first_name = %s, last_name = %s, phone_number = %s
+                WHERE id = %s'''
+        data = (updated_contact.first_name, updated_contact.last_name, updated_contact.phone_number, id)
+        cursor.execute(query, data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+      
+    @staticmethod   
+    def del_contact(id: int):
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = '''DELETE FROM contacts 
+                WHERE id = %s'''
+        cursor.execute(query, (id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
