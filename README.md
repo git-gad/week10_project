@@ -34,6 +34,3 @@ This project is intended for learning and practicing:
 - **Docker Compose**
 
 ---
-
-## 📁 Project Structure
-
